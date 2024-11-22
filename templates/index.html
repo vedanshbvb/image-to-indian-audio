@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to Audio Translation</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-2xl font-bold mb-6 text-center">Image to Audio Translation</h1>
+        
+        <form id="uploadForm" class="mb-8">
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">Select Image:</label>
+                <input type="file" id="imageInput" accept="image/*" class="w-full p-2 border rounded">
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                Process Image
+            </button>
+        </form>
+
+        <div id="results" class="hidden">
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold mb-2">Image Caption:</h2>
+                <p id="caption" class="text-gray-700"></p>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold mb-2">Translations:</h2>
+                <div class="space-y-4">
+                    <div class="border-t pt-4">
+                        <h3 class="font-medium">Hindi:</h3>
+                        <p id="hindi" class="text-gray-700"></p>
+                        <audio id="audio-hi" controls class="mt-2 w-full"></audio>
+                    </div>
+                    <div class="border-t pt-4">
+                        <h3 class="font-medium">Punjabi:</h3>
+                        <p id="punjabi" class="text-gray-700"></p>
+                        <audio id="audio-pa" controls class="mt-2 w-full"></audio>
+                    </div>
+                    <div class="border-t pt-4">
+                        <h3 class="font-medium">Gujarati:</h3>
+                        <p id="gujarati" class="text-gray-700"></p>
+                        <audio id="audio-gu" controls class="mt-2 w-full"></audio>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading" class="hidden">
+            <p class="text-center text-gray-700">Processing image... Please wait.</p>
+        </div>
+
+        <div id="error" class="hidden">
+            <p class="text-center text-red-500"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const imageFile = document.getElementById('imageInput').files[0];
+            
+            if (!imageFile) {
+                alert('Please select an image first');
+                return;
+            }
+            
+            formData.append('image', imageFile);
+            
+            // Show loading state
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Update results
+                    document.getElementById('caption').textContent = data.caption;
+                    document.getElementById('hindi').textContent = data.translations.hi[0];
+                    document.getElementById('punjabi').textContent = data.translations.pa[0];
+                    document.getElementById('gujarati').textContent = data.translations.gu[0];
+                    
+                    // Update audio sources
+                    document.getElementById('audio-hi').src = data.audio_files.hi[0];
+                    document.getElementById('audio-pa').src = data.audio_files.pa[0];
+                    document.getElementById('audio-gu').src = data.audio_files.gu[0];
+                    
+                    // Show results
+                    document.getElementById('results').classList.remove('hidden');
+                } else {
+                    throw new Error(data.error || 'An error occurred');
+                }
+            } catch (error) {
+                document.getElementById('error').textContent = error.message;
+                document.getElementById('error').classList.remove('hidden');
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
