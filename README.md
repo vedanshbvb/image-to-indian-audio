@@ -9,7 +9,7 @@ There, you'll get this page:
 ![Alt text](first.png)
 
 Choose your image:
-![Alt text](choose.png)
+![Alt text](choose_image.png)
 
 Click on 'Process Image' to get results:
 ![Alt text](done.png)
