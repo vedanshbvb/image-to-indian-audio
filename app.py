@@ -101,7 +101,11 @@ def generate_audio(translations, lang, output_prefix):
 
 def get_image_caption(image_path):
     API_URL = "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large"
-    headers = {"Authorization": "Bearer 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"}
+    
+    api_key = os.getenv("HF_API_KEY")
+
+    # Use the API key in your headers
+    headers = {"Authorization": f"Bearer {api_key}"}
 
     with open(image_path, "rb") as f:
         data = f.read()
