@@ -2,6 +2,7 @@ ctranslate2==4.5.0
 datasets==2.20.0
 fairseq==0.12.2
 flash_attn==2.7.0.post2
+Flask==3.1.0
 gevent==24.11.1
 gTTS==2.5.4
 indic_nlp_library_IT2==0.0.2
@@ -25,5 +26,4 @@ tqdm==4.66.4
 transformers==4.46.0
 tritonclient==2.51.0
 urduhack==1.1.1
-flask
-werkzeug
+Werkzeug==3.1.3
